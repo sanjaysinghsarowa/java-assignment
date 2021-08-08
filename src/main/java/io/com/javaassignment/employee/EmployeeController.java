@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.com.javaassignment.department.Department;
+
 @RestController
 public class EmployeeController {
 
@@ -33,13 +35,45 @@ public class EmployeeController {
 		Collections.sort(list,(p1,p2)->{  
 	        return p1.getLastName().compareTo(p2.getLastName());  
 	        });  
-		List<Employee> result=list.stream().filter(p -> p.getSkills().split(",").length > 2).collect(Collectors.toList());
+		List<Employee> result=list.stream().filter(p -> p.getSkills().split(",").length >= 3).collect(Collectors.toList());
   
 		return result;
 		
 	}
 	
 	
+	
+	/*
+	 * Method Name - getEmployeeAndDeptIdString.
+	 * Method description- returns a list of  string using LastName and department_id of employees whose salary is >=5000 and Department name is 'Devshop' or 'Engg'.
+	 * Created By - Sanjay Singh Sarowa
+	 * 
+	 * */
+	
+	@RequestMapping("/employeesAndDeptId")
+	public List<String> getEmployeeAndDeptIdString(){
+		List<Employee> list=getAllEmployees();
+		list=list.stream().filter(p -> Integer.parseInt(p.getSalary()) >= 5000 ).collect(Collectors.toList());
+		list=list.stream().filter(p1-> p1.getDepartment().getDepartment_Name().equalsIgnoreCase("devshop")||p1.getDepartment().getDepartment_Name().equalsIgnoreCase("engg")).collect(Collectors.toList());
+		 
+		
+		Map <Employee, Department> map= new HashMap<Employee, Department>();
+
+		 for(Employee e:list)
+		{
+			map.put(e,e.getDepartment());
+		}
+		
+		List<String> result=new ArrayList<String>();
+		
+		for(Map.Entry m:map.entrySet()){
+			String lname=((Employee) m.getKey()).getLastName();
+			String dept_id=((Department) m.getValue()).getDepartment_id();
+			   result.add(lname +" - "+dept_id );  
+			  }
+		 return result;
+		
+	}
 	
 	
 	@RequestMapping("/employees")
